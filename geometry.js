@@ -1,4 +1,9 @@
-
+/**
+ * Linear Interpolation
+ * @param {float} x1 
+ * @param {float} x2 
+ * @param {float} alpha 
+ */
 const lerp = 
     (x1, x2, alpha) => {
 
@@ -15,24 +20,46 @@ const lerp =
 
     }
 
+/**
+ * calculates intersection point with top or bottom of SVG
+ * @param {integer} f 
+ * @param {array} data 
+ * @param {function} xScale 
+ * @param {function} yScale 
+ * @param {integer} i 
+ */
 const simple_intersection = 
-    (f, data, xAxis, yAxis, i) => {
-        let numer = f - yAxis(data[i-1].y),
-            denom = yAxis(data[i].y)-yAxis(data[i-1].y)
+    (f, data, xScale, yScale, i) => {
+        let numer = f - yScale(data[i-1].y),
+            denom = yScale(data[i].y)-yScale(data[i-1].y)
 
         let alpha = numer/denom
 
-        return {x:lerp(xAxis(data[i-1].x), xAxis(data[i].x), alpha), y:f}
+        return {x:lerp(xScale(data[i-1].x), xScale(data[i].x), alpha), y:f}
     }
 
+/**
+ * check if path crosses f bounds
+ * @param {array} data 
+ * @param {function} yAxis 
+ * @param {integer} i 
+ * @param {integer} f 
+ */
 const crosses_bounds =
-    (data, yAxis, i, f) => {
-        let check1 = yAxis(data[i-1].y) > f && yAxis(data[i].y) < f,
-            check2 = yAxis(data[i-1].y) < f && yAxis(data[i].y) > f
+    (data, yScale, i, f) => {
+        let check1 = yScale(data[i-1].y) > f && yScale(data[i].y) < f,
+            check2 = yScale(data[i-1].y) < f && yScale(data[i].y) > f
 
         return check1 || check2
     }
 
+/**
+ * 2D line intersections
+ * @param {object} p1 
+ * @param {object} p2 
+ * @param {object} p3 
+ * @param {object} p4 
+ */
 const line_intersection = 
     (p1,p2,p3,p4) => {
         let ret = {}
