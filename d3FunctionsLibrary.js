@@ -1,4 +1,147 @@
 /**
+ * makes the program sleep for ms milliseconds
+ * @param {integer} ms 
+ */
+const sleep = 
+(ms) => 
+    new Promise
+        (
+            resolve => 
+                setTimeout(resolve, ms)
+        )
+
+/**
+ * Empties the "chart" SVG
+ * @param {string} chart 
+ */
+const emptyChart = 
+chart =>
+    $(chart).empty()
+
+/**
+ * checks if input is null
+ */
+const isNull =
+    R.equals(null)
+
+/**
+ * returns whether the button is checked
+ * @param {string} button 
+ */
+const isChecked = 
+button => 
+    R.equals
+    (
+        $(`#${button}`)
+            .prop('checked'),
+        true
+    )
+
+/**
+ * performs a GET request using d3
+ * @param {string} route 
+ * @param {function} func 
+ * @param {function} form 
+ */
+const getRequest = 
+(route, func, form) => 
+            d3.json(
+                `${route}?${$(`#${form}`).serialize()}`,
+                func
+            )
+
+/**
+ * toggles the hidden button
+ * @param {string} button 
+ * @param {boolean} disable 
+ */
+const toggleHidden = 
+(button, disable) =>
+        $(`#${button}`).prop('disabled', disable)
+
+/**
+ * toggles which svgs are used based on checkboxes checked
+ * @param {array} checkboxes 
+ * @param {array} svgs 
+ */
+const toggleSVG = 
+(checkboxes, svgs) =>
+    {
+        for(let i = 0; i < checkboxes.length; i++)
+            {
+                if(isChecked(checkboxes[i]))
+                {
+                    for(svg of svgs){
+                        document.getElementById(`${svg}${i+1}`)
+                                .setAttribute('display', 'inline') 
+                    }
+                }
+                else
+                {
+                    for(svg of svgs){
+                        document.getElementById(`${svg}${i+1}`)
+                                .setAttribute('display', 'none') 
+                    }
+                }
+            }
+    }
+
+/**
+ * returns extents of a data array
+ * @param {boolean} x 
+ */
+const getExtents = 
+x => 
+    x ? 
+        R.compose(
+            d3.extent,
+            R.flip(R.append)([0]),
+            R.reduce(R.max, -Infinity),
+            R.map(R.length)
+        )
+      : 
+        R.compose(
+            d3.extent,
+            R.map(d=>d.y),
+            R.reduce(R.concat,[]),
+            R.filter(d=>d!=null)
+        )
+
+/**
+ * returns the scale function between sets dom and ran
+ * @param {array} dom 
+ * @param {array} ran 
+ */
+const getScale = 
+(dom, ran) =>
+    d3.scaleLinear()
+            .domain(dom)
+            .range(ran)
+
+/**
+ * returns statistical data for a dataset
+ * @param {array} data 
+ */
+const getStatData = 
+data => 
+    { 
+        let m = R.compose(R.mean,)(data)
+        
+        let sd = R.compose(Math.sqrt, R.mean, R.map(d=>R.multiply(d-m,d-m)))(data)
+    
+        let mn = R.reduce(R.min, Infinity, data),
+            mx = R.reduce(R.max, -Infinity, data)
+    
+        return {
+            mean: m,
+            upper: m+2*sd,
+            lower: m-2*sd,
+            min: mn,
+            max: mx
+        }
+    }
+
+/**
  * print all dots from json data 
  * @param {SVG element} svg 
  * @param {array} data 
