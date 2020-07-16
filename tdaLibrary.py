@@ -1,5 +1,5 @@
 from ripser import ripser
-import math, numpy as np, os, re, itertools
+import math, numpy as np, os
 
 """actionUnitsKey = {                                                                                                                                              # dictionary mapping parts of face
     "leftEye": (0,7),                                                                                                                                           # to a subset of the Action Units list
